@@ -1,0 +1,8 @@
+login jwt done
+login google ongoing
+populate done
+bidding logic  done
+
+
+//priorty queue
+stripe intergation ongoing
