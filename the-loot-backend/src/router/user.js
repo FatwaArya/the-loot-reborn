@@ -3,9 +3,9 @@ const User = require('../model/user');
 const Item = require('../model/item');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const multer = require('multer')
 const sharp = require('sharp')
 const stripe = require('stripe')(process.env.STRIPE);
+const uploadUser = require('../middleware/upload');
 
 //new user
 router.post('/users', async (req, res) => {
@@ -84,20 +84,8 @@ router.get('/items/owned', auth, async (req, res) => {
     }
 })
 
-//upload image endpoint
-const upload = multer({
-    limits: {
-        fileSize: 1000000
-    },
-    fileFilter(req, file, cb) {
-        if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-            return cb(new Error('Please upload an image'))
-        }
-        cb(undefined, true)
-    }
-})
 
-router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) => {
+router.post('/users/me/avatar', auth, uploadUser.single('avatar'), async (req, res) => {
     if (req.user === undefined) {
         return res.status(400).send({error: 'You are not a user'})
     }

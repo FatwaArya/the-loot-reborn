@@ -3,9 +3,9 @@ const User = require('../model/user');
 const Item = require('../model/item');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const multer = require('multer')
 const sharp = require('sharp')
-
+const uploadMerchant = require('../middleware/upload');
+const uploadItem = require('../middleware/upload');
 //new merchant
 router.post('/merchants', async (req, res) => {
     const merchant = new User(req.body);
@@ -139,18 +139,8 @@ router.patch('/merchants/items/:id', auth, async (req, res) => {
 })
 
 //upload avatar
-const upload = multer({
-    limits: {
-        fileSize: 1000000
-    },
-    fileFilter(req, file, cb) {
-        if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-            return cb(new Error('Please upload an image'))
-        }
-        cb(undefined, true)
-    }
-})
-router.post('/merchants/avatar', auth, upload.single('avatar'), async (req, res) => {
+
+router.post('/merchants/avatar', auth, uploadMerchant.single('avatar'), async (req, res) => {
     if (req.merchant === undefined) {
         return res.status(400).send({ error: 'You are not a merchant' })
     }
@@ -188,18 +178,6 @@ router.get('/merchants/avatar', auth, async (req, res) => {
     }
 })
 
-//upload item image
-const uploadItem = multer({
-    limits: {
-        fileSize: 1000000
-    },
-    fileFilter(req, file, cb) {
-        if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-            return cb(new Error('Please upload an image'))
-        }
-        cb(undefined, true)
-    }
-})
 router.post('/merchants/items/:id/image', auth, uploadItem.single('image'), async (req, res) => {
     if (req.merchant === undefined) {
         return res.status(400).send({ error: 'You are not a merchant' })
